@@ -1,0 +1,98 @@
+---
+
+- name: user
+  user: >
+    name=balanced
+    state=present
+    shell=/bin/bash
+    createhome=no
+    home=/opt/balanced
+
+- name: dirs
+  file: path={{ item }} owner=balanced group=balanced state=directory mode=0755
+  with_items:
+  - /etc/balanced
+  - /var/lib/balanced
+  - /var/run/balanced
+  - /var/log/balanced
+
+- name: writing balanced app config
+  template: >
+    src=balanced.conf.j2
+    dest=/etc/balanced/balanced.conf
+    owner=balanced
+    group=balanced
+    mode=0644
+  notify:
+  - restart balanced
+
+- name: writing balanced gunicorn conf
+  template: >
+    src=gunicorn.conf.j2
+    dest=/etc/balanced/gunicorn.conf
+    owner=balanced
+    group=balanced
+    mode=0644
+  notify:
+  - restart balanced
+
+- name: writing balanced logging conf
+  template: >
+    src=log.conf.j2
+    dest=/etc/balanced/log.conf
+    owner=balanced
+    group=balanced
+    mode=0644
+  notify:
+  - restart balanced
+
+- name: setting up log rotation
+  copy: >
+    src=logrotate
+    dest=/etc/logrotate.d/balanced
+    owner=root
+    group=root
+    mode=0644
+
+- name: writing syslog conf
+  copy: >
+    src=rsyslog.conf
+    dest=/etc/rsyslog.d/40-balanced.conf
+    owner=root
+    group=root
+    mode=0644
+  notify:
+  - restart rsyslog
+
+- name: writing balanced default execution environment
+  copy: >
+    src=init/default
+    dest=/etc/default/balanced
+    owner=root
+    group=root
+    mode=0644
+  notify:
+    - restart balanced
+
+- name: writing balanced service initd script
+  template: >
+    src=init/gunicorn.j2
+    dest=/etc/init.d/balanced
+    owner=root
+    group=root
+    mode=0755
+  notify:
+    - restart balanced
+
+- name: registering balanced service
+  service: name=balanced enabled=off
+
+- name: enabling balanced
+  shell: date > /var/lib/balanced/health
+  args:
+    creates: /var/lib/balanced/health
+  when: balanced_healthy
+
+- name: disabling balanced
+  file: /var/lib/balanced/health state=absent
+  when: not balanced_healthy

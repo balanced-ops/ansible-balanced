@@ -1,0 +1,173 @@
+{
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'level': 'NOTSET',
+            'formatter': 'console',
+            'stream': None,  # stderr
+            'filters': ['extra', 'guru'],
+        },
+        'syslog-error': {
+            'class': 'logging.handlers.SysLogHandler',  # defaults to UDP
+            'level': 'NOTSET',
+            'formatter': 'syslog-error',
+            'address': ('127.0.0.1', {{ balanced_syslog_port }}),
+            'filters': ['extra', 'guru'],
+        },
+        'syslog-request': {
+            'class': 'logging.handlers.SysLogHandler',  # defaults to UDP
+            'level': 'INFO',
+            'formatter': 'syslog-request',
+            'address': ('127.0.0.1', {{ balanced_syslog_port }}),
+            'filters': ['extra'],
+        },
+        'syslog-access': {
+            'class': 'logging.handlers.SysLogHandler',  # defaults to UDP
+            'level': 'INFO',
+            'formatter': 'syslog-access',
+            'address': ('127.0.0.1', {{ balanced_syslog_port }}),
+            'filters': ['extra', 'guru'],
+        },
+        'syslog-messaging': {
+            'class': 'logging.handlers.SysLogHandler',  # defaults to UDP
+            'level': 'INFO',
+            'formatter': 'syslog-messaging',
+            'address': ('127.0.0.1', {{ balanced_syslog_port }}),
+            'filters': [],
+        },
+        'syslog-sentry': {
+          'class': 'logging.handlers.SysLogHandler',  # defaults to UDP
+            'level': 'WARN',
+            'formatter': 'syslog-sentry',
+            'address': ('127.0.0.1', {{ balanced_syslog_port }}),
+            'filters': [
+                'extra',
+                'guru',
+                'sentry',
+                'sentry.http_status',
+                'sentry.noise',
+            ]
+         },
+    },
+    'formatters': {
+         'console': {
+            'format': (
+                '%(asctime)s,%(msecs)03d : '
+                '%(levelname)-5.5s : '
+                '%(name)s : '
+                '[%(process)s] '
+                '[%(threadName)s] '
+                '[%(version)s] '
+                '[guru_id=%(guru_id)s] '
+                '%(message)s'
+            ),
+            'datefmt': '%H:%M:%S',
+        },
+        'syslog-error': {
+            'format': (
+                'balanced-error[%(process)d]: '
+                '%(asctime)s : '
+                '%(levelname)s : '
+                '%(name)s : '
+                '%(process)d : '
+                '%(threadName)s : '
+                'version=%(version)s : '
+                'guru_id=%(guru_id)s : '
+                '%(message)s'
+            ),
+        },
+        'syslog-request': {
+            '()': 'sterling.log.NoExcTextFormatter',
+            'format': 'balanced-request[%(process)d]: %(message)s',
+        },
+        'syslog-access': {
+            '()': 'sterling.log.NoExcTextFormatter',
+            'format': 'balanced-access[%(process)d]: %(message)s',
+        },
+        'syslog-messaging': {
+            '()': 'sterling.log.NoExcTextFormatter',
+            'format': 'balanced-messaging[%(process)d]: %(message)s',
+        },
+        'syslog-sentry': {
+            '()': 'sterling.log.sentry.Formatter',
+            'format': "balanced-sentry[%(process)d]: {{ balanced_sentry_project }}: %(sentry)s",
+        },
+    },
+    'filters': {
+        'guru': {
+            '()': 'sterling.wag.LogGuruFilter',
+            'default': '',
+        },
+        'extra': {
+            '()': 'sterling.wag.LogExtraFilter',
+            'version': '',
+        },
+        'sentry': {
+            '()': 'sterling.log.sentry.Filter',
+            'project': '{{ balanced_sentry_project }}',
+            'extra': ['guru_id'],
+            'auto_log_stacks': True,
+        },
+        'sentry.http_status': {
+            '()': 'sterling.wag.LogHTTPStatusFilter',
+            'include_codes': (500, 502, 504),
+        },
+        'sentry.noise': {
+            '()': 'sterling.log.LogNoiseFilter',
+        },
+    },
+    'loggers': {
+        'sqlalchemy': {
+            'level': 'WARN',
+            'qualname': 'sqlalchemy.engine',
+            'propagate': True,
+        },
+        {% for channel in [requests.packages.urllib3,
+                           urllib3.connectionpool,
+                           newrelic.core.agent,
+                           newrelic.core.data_collector,
+                           statsd.client] %}
+        '{{ channel }}': {
+              'level': 'WARN',
+              'qualname': '{{ channel }}',
+              'propagate': False,
+        },
+        {% endfor %}
+        {% for channel in [iso8601.iso8601] %}
+        '{{ channel }}': {
+              'level': 'DEBUG',
+              'qualname': '{{ channel }}',
+              'propagate': False,
+        },
+        {% endfor %}
+        'gunicorn': {
+            'qualname': 'gunicorn',
+            'propagate': True,
+        },
+        'gunicorn.access': {
+            'level': 'INFO',
+            'qualname': 'gunicorn.access',
+            'propagate': False,
+            'handlers': ['console', 'syslog-access'],
+        },
+        'balanced-request': {
+            'level': 'INFO',
+            'qualname': 'balanced-request',
+            'propagate': False,
+            'handlers': ['console', 'syslog-request'],
+        },
+        'balanced_service.messages': {
+            'level': 'DEBUG',
+            'qualname': 'balanced_service.messages',
+            'propagate': True,
+            'handlers': [
+                'syslog-messaging',
+            ],
+    },
+    'root': {
+        'level': log_level,
+        'handlers': ['console', 'syslog-error', 'syslog-sentry'],
+    },
+}

@@ -1,0 +1,13 @@
+---
+
+- name: checkout source
+  git: >
+    repo="{{ balanced_git_repo }}"
+    dest="~{{ ansible_ssh_user }}/balanced"
+    version="{{ balanced_git_repo }}"
+  sudo: no
+
+- name: install from source
+  pip: >
+    name="~{{ ansible_ssh_user }}/balanced/setup.py"
+    extra_args='-e .'

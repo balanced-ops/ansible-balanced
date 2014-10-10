@@ -1,0 +1,16 @@
+---
+
+- name: start balanced
+  service: name=balanced state=started
+
+- name: restart balanced
+  service: name=balanced state=restarted
+
+- name: reload balanced
+  service: name=balanced state=reloaded
+
+- name: restart rsyslog
+  service: name=rsyslog state=restarted
+
+- name: reload rsyslog
+  service: name=rsyslog state=reloaded

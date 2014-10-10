@@ -1,0 +1,12 @@
+---
+
+- include: install_git.yml
+  tags: [balanced, balanced-install]
+  when: balanced_install_method == 'git'
+
+- include: install_apt.yml
+  tags: [balanced, balanced-install]
+  when: balanced_install_method == 'apt'
+
+- include: base.yml
+  tags: [balanced]

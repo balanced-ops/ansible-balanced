@@ -1,0 +1,46 @@
+import multiprocessing
+
+
+bind = '{{ balanced_host }}:{{ balanced_host }}'
+
+backlog = {{ balanced_gunicorn_backlog }}
+
+worker_connections = {{ balanced_gevent_connections }}
+
+loglevel = '{{ balanced_log_level }}'
+
+log_class = 'sterling.log.gunicorn.Logger'
+
+logconfig = '/etc/balanced/log.conf'
+
+error_logfile = '-'
+
+access_logfile = '-'
+
+workers = multiprocessing.cpu_count() * 2 + 1
+
+worker_class = 'gevent'
+
+proc_name = 'balanced'
+
+access_log_format = '{{ balanced_access_format.strip() }}'
+
+
+def post_worker_init(worker):
+    """
+    Initialize application and apply wsgi middleware.
+    """
+    import os
+    import balanced_service
+
+    conf_file = os.getenv('BALANCED_CONF', None)
+    if conf_file is None or conf_file == '-':
+        conf_file = '<%= @conf_dir %>/balanced.conf'
+        if not os.path.isfile(conf_file):
+            conf_file = None
+    balanced_service.init(conf_file)
+    worker.wsgi = balanced_service.apply_middleware(
+        worker.wsgi,
+        proxied=balanced_service.config['PROXIED'],
+        stats=balanced_service.config['NEWRELIC_FILE'] is not None,
+    )

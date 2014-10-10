@@ -1,0 +1,6 @@
+---
+
+- name: install balanced from apt repo
+  apt: >
+    pkg="balanced{{'=' ~ balanced_apt_version if balanced_apt_version else ''}}"
+    state=present
