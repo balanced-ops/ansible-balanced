@@ -1,7 +1,26 @@
 ---
+galaxy_info:
+  author: Balanced
+  description: Ansible role to install the Balanced API
+  license: MIT
+  min_ansible_version: 1.4
+  platforms:
+    name: Ubuntu
+    version:
+      - precise
+  categories: []
 
 dependencies:
-- rsyslog
-- monit
-- supervisord
-- postgresql-client
+  - src: https://github.com/zenoamaro/ansible-supervisord.git
+    version: master
+    path: roles
+    name: supervisord
+
+  # - src: https://github.com/balanced-cookbooks/ansible-rsyslog.git
+  #   name: rsyslog
+  #   version: master
+  #   path: roles
+  # - src: https://github.com/balanced-cookbooks/ansible-postgresql-client.git
+  #   version: master
+  #   path: roles
+  #   name: postgresql-client
