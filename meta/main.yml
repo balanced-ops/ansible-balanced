@@ -13,14 +13,12 @@ galaxy_info:
 dependencies:
   - src: https://github.com/zenoamaro/ansible-supervisord.git
     version: master
-    path: roles
     name: supervisord
 
-  # - src: https://github.com/balanced-cookbooks/ansible-rsyslog.git
-  #   name: rsyslog
-  #   version: master
-  #   path: roles
-  # - src: https://github.com/balanced-cookbooks/ansible-postgresql-client.git
-  #   version: master
-  #   path: roles
-  #   name: postgresql-client
+  - src: https://github.com/balanced-cookbooks/ansible-rsyslog.git
+    name: rsyslog
+    version: master
+
+  - src: https://github.com/balanced-cookbooks/ansible-postgresql-client.git
+    version: master
+    name: postgresql-client
