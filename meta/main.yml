@@ -12,4 +12,18 @@ galaxy_info:
 
 dependencies:
 
-  - include: ../requirements.yml
+  - src: git+git@github.com:zenoamaro/ansible-supervisord.git
+    version: master
+    name: ansible-balanced/roles/supervisord
+
+  - src: git+git@github.com:balanced-cookbooks/ansible-rsyslog.git
+    version: master
+    name: ansible-balanced/roles/rsyslog
+
+  - src: git+git@github.com:balanced-cookbooks/ansible-postgresql-client.git
+    version: master
+    name: ansible-balanced/roles/postgresql-client
+
+  - src: git+git@github.com:balanced-cookbooks/ansible-base.git
+    version: master
+    name: ansible-balanced/roles/base
