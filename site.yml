@@ -1,0 +1,68 @@
+---
+
+- hosts: all
+  sudo: yes
+  vars:
+    citadel_bucket: 'balanced-citadel'
+  roles:
+    - base
+
+  pre_tasks:
+
+    - name: check apt last update
+      stat: path=/var/cache/apt
+      register: apt_cache_stat
+
+    - name: update apt if needed
+      apt: update_cache=yes
+      when: ansible_date_time.epoch|float - apt_cache_stat.stat.mtime > 60*60*12
+
+  tasks:
+    - name: Fetch deploy key?
+      debug: msg="{{ lookup('citadel', '/deploy_key/deploy.pem') }}"
+      tags: citadel
+
+    - name: Write the deploy key for cloning
+      tags: deploy-key
+      sudo: false
+      lineinfile:
+        dest=~/.ssh/deploy_key
+        line="{{ lookup('citadel', '/deploy_key/deploy.pem') }}"
+        state=present
+        create=yes
+        mode='0400'
+
+    # - name: install web server packages
+    #   apt: pkg={{ item }} state=installed
+    #   with_items:
+    #     - build-essential
+    #     - libpq-dev
+    #     - libmysqlclient-dev
+    #     - libxml2-dev
+    #     - python-dev
+    #     - python-imaging
+    #     - python-psycopg2
+    #     - git
+    #     - nginx
+    #     - python-setuptools
+    #     - siege
+    #     - curl
+    #     - apache2-utils
+    - name: Copy the github public key to known hosts
+      tags: balanced-install
+      sudo: false
+      lineinfile:
+        dest=~/.ssh/known_hosts
+        regexp=^github.com
+        line="github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ=="
+        state=present
+        create=yes
+
+    - name: install balanced
+      sudo: no
+      include: tasks/main.yml
+      tags: balanced-install
+      vars:
+        balanced_install_method: git
+        balanced_git_repo: git@github.com:balanced/balanced.git
+        balanced_git_version: HEAD
