@@ -1,7 +1,7 @@
 from balanced_service.settings import HEALTH_CHECK, AMQP, ES, DS, REDIS, FEATURES
 
 HEALTH_CHECK.update({
-    'file_path': '<%= @health_file %>',
+    'file_path': '{{ balanced_health_file }}',
     'allowed_cidrs': [
         '127.0.0.1',
         '10.0.0.0/8',
@@ -11,121 +11,106 @@ HEALTH_CHECK.update({
     'check_connectivity': True
 })
 
-APP_ENVIRONMENT = '<%=@app_environment%>'
+APP_ENVIRONMENT = '{{ balanced_app_environment }}'
 
-PROXIED = <%= @proxied ? "True" : "False" %>
-<% if @newrelic_enabled -%>
+PROXIED = {% 'True' if balanced_proxied else 'False' %}
 
-NEWRELIC_FILE = '<%= @newrelic_file %>'
-<% if @newrelic_env -%>
-
-NEWRELIC_ENV = '<%= @newrelic_env %>'
-<% end -%>
-<% end -%>
-<% if @knox %>
-
-KNOX = {
-    'root_url': '<%= @knox['url'] %>',
-    'auth': ('<%= @knox['username'] %>', '<%= @knox['password'] %>'),
-}
-<% end -%>
-<% if @precog %>
-
+{% if balanced_precog_url %}
 PRECOG = {
-    'root_url': '<%= @precog['url'] %>',
-    'auth': ('<%= @precog['username'] %>', '<%= @precog['password'] %>'),
+    'root_url': '{{  balanced_precog_url  }}',
+    'auth': ('{{  balanced_precog_username  }}', '{{  balanced_precog_password  }}'),
 }
-<% end -%>
-<% if @postgres %>
+{%- endif %}
 
+{% if balanced_postgres %}
 DATABASES = {
-<% @postgres.each_pair do |type, uris| -%>
-    '<%= type %>': [
-<% uris.each do |uri| -%>
-        '<%= uri %>',
-<% end -%>
+  {% for type, uris in balanced_postgres.iteritems() -%}
+    '{{  type  }}': [
+      {% for uri in -%}
+        '{{  uri  }}',
+      {%- endfor %}
     ],
-<% end -%>
+  {%- endfor %}
 }
-<% end -%>
-<% if @amqp %>
+{%- endif %}
 
+{% if balanced_amqp %}
 AMQP.update({
-    <%@amqp.each do |key, value|%>
-    <%if value.is_a? String %>
-    '<%=key%>': '<%=value%>',
-    <%end%>
-    <%end%>
+  {% for key, value in balanced_amqp.iteritems() %}
+    {% if isinstance(value, basestring) %}
+    '{{ key }}': '{{ value }}',
+    {% endif %}
+  {% endfor %}
 })
-<% end -%>
+{%- endif %}
 
-<% if @es %>
-
+{% if balanced_es %}
 ES.update({
-<% @es['clusters'].each_pair do |name, cluster| -%>
-    '<%= name %>': {
-        'hosts': [
-<% cluster['hosts'].each do |host| -%>
-            '<%= host %>',
-<% end -%>
-        ],
-<% if cluster['username'] && cluster['password'] -%>
-        'basic_auth': {
-            'username': '<%= cluster['username'] %>',
-            'password': '<%= cluster['password'] %>'
-        },
-<% end -%>
-    },
-<% end -%>
+  {% for name, cluster in balanced_es['clusters'].iteritems() -%}
+      '{{  name  }}': {
+          'hosts': [
+    {% for host in cluster['hosts'] -%}
+              '{{  host  }}',
+    {%- endfor %}
+          ],
+    {% if cluster['username'] and cluster['password'] -%}
+          'basic_auth': {
+              'username': '{{  cluster['username']  }}',
+              'password': '{{  cluster['password']  }}'
+          },
+    {%- endif %}
+      },
+  {%- endfor %}
 })
 ES['pool'].update({
-    'maxsize': <%= @es['pool']['max_size'] %>,
-    'timeout': <%= @es['pool']['timeout'] %>,
+    'maxsize': {{  balanced_es['pool']['max_size']  }},
+    'timeout': {{  balanced_es['pool']['timeout']  }},
 })
-<% end -%>
-<% if @mongo -%>
+{%- endif %}
 
-DS.update({
-    'db': '<%= @mongo['collection'] %>',
-    'host': '<%= @mongo['uri'] %>',
-})
-<% end -%>
-<% if @redis %>
-
+{% if balanced_redis %}
 REDIS.update({
-    'host': '<%= @redis['host'] %>',
-    'db': <%= @redis['db'] %>,
+    'host': '{{  balanced_redis['host']  }}',
+    'db': '{{  balanced_redis['db']  }}',
 })
-<% end -%>
-<% if @sentry %>
+{%- endif %}
 
-SENTRY_URL = '<%= @sentry['url'] %>'
+{% if balanced_sentry %}
+SENTRY_URL = '{{  balanced_sentry['url']  }}'
+SENTRY_DSN = '{{  balanced_sentry['dsn']  }}'
+{%- endif %}
 
-SENTRY_DSN = '<%= @sentry['dsn'] %>'
-<% end -%>
-<% if @features %>
-
+{% if balanced_features %}
 FEATURES.update({
-<% @features.each_pair do |name, enable| %>
-    '<%= name %>': <%= enable ? 'True' : 'False' %>,
-<% end -%>
+  {% for name, enable in balanced_features.iteritems() %}
+      '{{  name  }}': {{ 'True' if enable else 'False' }},
+  {%- endfor %}
 })
-<% end -%>
-<% if @statsd %>
+{%- endif %}
 
+{% if balanced_statsd %}
 STATSD = {
-    'host': '<%= @statsd['host'] %>',
-    'port': <%= @statsd['port'] %>,
+    'host': '{{  balanced_statsd['host']  }}',
+    'port': '{{  balanced_statsd['port']  }}',
 }
-<% end -%>
+{%- endif %}
 
-<% if @ignoreable_callback_domains %>
+{% if balanced_ignoreable_callback_domains %}
 IGNOREABLE_CALLBACK_DOMAINS = (
-    <% @ignoreable_callback_domains.each do |icd| -%>
-        '<%= icd %>',
-    <% end -%>
+    {% for icd in balanced_ignoreable_callback_domains -%}
+        '{{  icd  }}',
+    {%- endfor %}
 )
-<% end %>
+{% endif %}
 
-CAN_SERVE_PRODUCTION_MARKETPLACES = <%= @can_serve['production'] ? 'True' : 'False' %>
-CAN_SERVE_TEST_MARKETPLACES = <%= @can_serve['test'] ? 'True' : 'False' %>
+
+CAN_SERVE_PRODUCTION_MARKETPLACES = {{ 'True' if balanced_serves_live else 'False' }}
+CAN_SERVE_TEST_MARKETPLACES = {{ 'True' if balanced_serves_integration else 'False' }}
+
+
+{% if balanced_newrelic_file -%}
+NEWRELIC_FILE = '{{  balanced_newrelic_file  }}'
+  {% if balanced_newrelic_env -%}
+NEWRELIC_ENV = '{{  balanced_newrelic_env  }}'
+  {%- endif %}
+{%- endif %}

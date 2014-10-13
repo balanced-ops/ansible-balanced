@@ -1,0 +1,43 @@
+---
+balanced_app_environment: null
+balanced_proxied: null
+
+# health file
+balanced_health_file: null
+
+# precog credentials
+balanced_precog_url: null
+balanced_precog_username: null
+balanced_precog_password: null
+
+# postgres uris
+balanced_postgres: {}
+
+# amqp
+balanced_amqp: {}
+
+# es
+balanced_es: {}
+
+# redis
+balanced_redis: {}
+
+# sentry
+balanced_sentry: {}
+
+# features
+balanced_features: {}
+
+# statsd
+balanced_statsd: {}
+
+# ignoreable callback domains
+balanced_ignoreable_callback_domains: {}
+
+# can serve prod/test?
+balanced_serves_live: null
+balanced_serves_integration: null
+
+# newrelic
+balanced_newrelic_file: null
+balanced_newrelic_env: null
