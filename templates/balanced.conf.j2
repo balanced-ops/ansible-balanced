@@ -1,0 +1,131 @@
+from balanced_service.settings import HEALTH_CHECK, AMQP, ES, DS, REDIS, FEATURES
+
+HEALTH_CHECK.update({
+    'file_path': '<%= @health_file %>',
+    'allowed_cidrs': [
+        '127.0.0.1',
+        '10.0.0.0/8',
+        '173.164.253.217',
+        '108.68.104.233',
+    ],
+    'check_connectivity': True
+})
+
+APP_ENVIRONMENT = '<%=@app_environment%>'
+
+PROXIED = <%= @proxied ? "True" : "False" %>
+<% if @newrelic_enabled -%>
+
+NEWRELIC_FILE = '<%= @newrelic_file %>'
+<% if @newrelic_env -%>
+
+NEWRELIC_ENV = '<%= @newrelic_env %>'
+<% end -%>
+<% end -%>
+<% if @knox %>
+
+KNOX = {
+    'root_url': '<%= @knox['url'] %>',
+    'auth': ('<%= @knox['username'] %>', '<%= @knox['password'] %>'),
+}
+<% end -%>
+<% if @precog %>
+
+PRECOG = {
+    'root_url': '<%= @precog['url'] %>',
+    'auth': ('<%= @precog['username'] %>', '<%= @precog['password'] %>'),
+}
+<% end -%>
+<% if @postgres %>
+
+DATABASES = {
+<% @postgres.each_pair do |type, uris| -%>
+    '<%= type %>': [
+<% uris.each do |uri| -%>
+        '<%= uri %>',
+<% end -%>
+    ],
+<% end -%>
+}
+<% end -%>
+<% if @amqp %>
+
+AMQP.update({
+    <%@amqp.each do |key, value|%>
+    <%if value.is_a? String %>
+    '<%=key%>': '<%=value%>',
+    <%end%>
+    <%end%>
+})
+<% end -%>
+
+<% if @es %>
+
+ES.update({
+<% @es['clusters'].each_pair do |name, cluster| -%>
+    '<%= name %>': {
+        'hosts': [
+<% cluster['hosts'].each do |host| -%>
+            '<%= host %>',
+<% end -%>
+        ],
+<% if cluster['username'] && cluster['password'] -%>
+        'basic_auth': {
+            'username': '<%= cluster['username'] %>',
+            'password': '<%= cluster['password'] %>'
+        },
+<% end -%>
+    },
+<% end -%>
+})
+ES['pool'].update({
+    'maxsize': <%= @es['pool']['max_size'] %>,
+    'timeout': <%= @es['pool']['timeout'] %>,
+})
+<% end -%>
+<% if @mongo -%>
+
+DS.update({
+    'db': '<%= @mongo['collection'] %>',
+    'host': '<%= @mongo['uri'] %>',
+})
+<% end -%>
+<% if @redis %>
+
+REDIS.update({
+    'host': '<%= @redis['host'] %>',
+    'db': <%= @redis['db'] %>,
+})
+<% end -%>
+<% if @sentry %>
+
+SENTRY_URL = '<%= @sentry['url'] %>'
+
+SENTRY_DSN = '<%= @sentry['dsn'] %>'
+<% end -%>
+<% if @features %>
+
+FEATURES.update({
+<% @features.each_pair do |name, enable| %>
+    '<%= name %>': <%= enable ? 'True' : 'False' %>,
+<% end -%>
+})
+<% end -%>
+<% if @statsd %>
+
+STATSD = {
+    'host': '<%= @statsd['host'] %>',
+    'port': <%= @statsd['port'] %>,
+}
+<% end -%>
+
+<% if @ignoreable_callback_domains %>
+IGNOREABLE_CALLBACK_DOMAINS = (
+    <% @ignoreable_callback_domains.each do |icd| -%>
+        '<%= icd %>',
+    <% end -%>
+)
+<% end %>
+
+CAN_SERVE_PRODUCTION_MARKETPLACES = <%= @can_serve['production'] ? 'True' : 'False' %>
+CAN_SERVE_TEST_MARKETPLACES = <%= @can_serve['test'] ? 'True' : 'False' %>

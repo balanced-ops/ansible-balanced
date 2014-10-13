@@ -10,4 +10,5 @@
   when: balanced_install_method == 'apt'
 
 - include: base.yml
+  sudo: yes
   tags: [balanced]
