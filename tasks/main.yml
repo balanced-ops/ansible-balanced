@@ -6,6 +6,7 @@
 
 - include: install_apt.yml
   tags: [balanced, balanced-install]
+  sudo: yes
   when: balanced_install_method == 'apt'
 
 - include: base.yml

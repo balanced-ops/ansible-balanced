@@ -4,18 +4,9 @@
   sudo: yes
   vars:
     citadel_bucket: 'balanced-citadel'
+
   roles:
     - base
-
-  pre_tasks:
-
-    - name: check apt last update
-      stat: path=/var/cache/apt
-      register: apt_cache_stat
-
-    - name: update apt if needed
-      apt: update_cache=yes
-      when: ansible_date_time.epoch|float - apt_cache_stat.stat.mtime > 60*60*12
 
   tasks:
     - name: Fetch deploy key?
@@ -32,22 +23,6 @@
         create=yes
         mode='0400'
 
-    # - name: install web server packages
-    #   apt: pkg={{ item }} state=installed
-    #   with_items:
-    #     - build-essential
-    #     - libpq-dev
-    #     - libmysqlclient-dev
-    #     - libxml2-dev
-    #     - python-dev
-    #     - python-imaging
-    #     - python-psycopg2
-    #     - git
-    #     - nginx
-    #     - python-setuptools
-    #     - siege
-    #     - curl
-    #     - apache2-utils
     - name: Copy the github public key to known hosts
       tags: balanced-install
       sudo: false
@@ -63,6 +38,5 @@
       include: tasks/main.yml
       tags: balanced-install
       vars:
-        balanced_install_method: git
-        balanced_git_repo: git@github.com:balanced/balanced.git
-        balanced_git_version: HEAD
+        balanced_install_method: apt
+        balanced_apt_version: null

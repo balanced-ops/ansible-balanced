@@ -1,5 +1,15 @@
 ---
 
+- name: install virtualenv
+  sudo: yes
+  pip: name=virtualenv
+
+- name: create the virtualenv
+  sudo: no
+  command: >
+    virtualenv balanced --no-site-packages
+    creates=/home/{{ ansible_ssh_user }}/.virtualenvs/balanced/bin/activate
+
 - name: checkout source
   sudo: no
   git: >
@@ -8,7 +18,11 @@
     version="{{ balanced_git_version }}"
     key_file=/home/{{ ansible_ssh_user }}/.ssh/deploy_key
 
-# - name: install from source
-#   pip: >
-#     name="~{{ ansible_ssh_user }}/balanced/setup.py"
-#     extra_args='-e .'
+- name: install from source
+  sudo: no
+  pip: >
+    name=.
+    chdir="/home/{{ ansible_ssh_user }}/balanced"
+    virtualenv=/home/{{ ansible_ssh_user }}/.virtualenvs/balanced
+    extra_args='-e'
+  tags: pip-install
