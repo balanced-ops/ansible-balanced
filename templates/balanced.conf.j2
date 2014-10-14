@@ -26,7 +26,7 @@ PRECOG = {
 DATABASES = {
   {% for type, uris in balanced_postgres.iteritems() -%}
     '{{  type  }}': [
-      {% for uri in -%}
+      {% for uri in uris -%}
         '{{  uri  }}',
       {%- endfor %}
     ],

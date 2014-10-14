@@ -124,24 +124,25 @@
             'qualname': 'sqlalchemy.engine',
             'propagate': True,
         },
-        {% for channel in [requests.packages.urllib3,
-                           urllib3.connectionpool,
-                           newrelic.core.agent,
-                           newrelic.core.data_collector,
-                           statsd.client] %}
+
+{% for channel in ["requests.packages.urllib3",
+                   "urllib3.connectionpool",
+                   "newrelic.core.agent",
+                   "newrelic.core.data_collector",
+                   "statsd.client"] %}
         '{{ channel }}': {
               'level': 'WARN',
               'qualname': '{{ channel }}',
               'propagate': False,
         },
-        {% endfor %}
-        {% for channel in [iso8601.iso8601] %}
+{% endfor %}
+{% for channel in ['iso8601.iso8601'] %}
         '{{ channel }}': {
               'level': 'DEBUG',
               'qualname': '{{ channel }}',
               'propagate': False,
         },
-        {% endfor %}
+{% endfor %}
         'gunicorn': {
             'qualname': 'gunicorn',
             'propagate': True,
@@ -165,9 +166,10 @@
             'handlers': [
                 'syslog-messaging',
             ],
+        },
     },
     'root': {
-        'level': log_level,
+        'level': '{{ balanced_log_level }}',
         'handlers': ['console', 'syslog-error', 'syslog-sentry'],
     },
 }

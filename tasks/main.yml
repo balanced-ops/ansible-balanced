@@ -11,4 +11,4 @@
 
 - include: base.yml
   sudo: yes
-  tags: [balanced]
+  tags: [balanced, balanced-install]

@@ -1,7 +1,7 @@
 import multiprocessing
 
 
-bind = '{{ balanced_host }}:{{ balanced_host }}'
+bind = '{{ balanced_app_host }}:{{ balanced_app_port }}'
 
 backlog = {{ balanced_gunicorn_backlog }}
 
@@ -35,7 +35,7 @@ def post_worker_init(worker):
 
     conf_file = os.getenv('BALANCED_CONF', None)
     if conf_file is None or conf_file == '-':
-        conf_file = '<%= @conf_dir %>/balanced.conf'
+        conf_file = '/etc/balanced/balanced.conf'
         if not os.path.isfile(conf_file):
             conf_file = None
     balanced_service.init(conf_file)

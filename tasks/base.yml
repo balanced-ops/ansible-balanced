@@ -16,7 +16,7 @@
   - /var/run/balanced
   - /var/log/balanced
 
-- name: writing balanced app config
+- name: creating balanced override config
   template: >
     src=balanced.conf.j2
     dest=/etc/balanced/balanced.conf
@@ -25,6 +25,7 @@
     mode=0644
   notify:
   - restart balanced
+  when: balanced_create_override_conf
 
 - name: writing balanced gunicorn conf
   template: >
@@ -45,6 +46,9 @@
     mode=0644
   notify:
   - restart balanced
+
+- name: check syntactical validatity of the log file (it is used via execfile)
+  shell: /usr/bin/python -c 'execfile("/etc/balanced/log.conf")'
 
 - name: setting up log rotation
   copy: >
@@ -88,11 +92,11 @@
   service: name=balanced enabled=off
 
 - name: enabling balanced
-  shell: date > /var/lib/balanced/health
+  shell: date > {{ balanced_health_file }}
   args:
-    creates: /var/lib/balanced/health
+    creates: "{{ balanced_health_file }}"
   when: balanced_healthy
 
 - name: disabling balanced
-  file: /var/lib/balanced/health state=absent
+  file: path={{ balanced_health_file }} state=absent
   when: not balanced_healthy

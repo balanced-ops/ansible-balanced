@@ -1,9 +1,34 @@
 ---
+# logging
+balanced_syslog_port: 514
+balanced_sentry_project: 'balanced'
+
+# gunicorn
+balanced_app_host: 0.0.0.0
+balanced_app_port: 5000
+balanced_gunicorn_backlog: 2048
+balanced_gevent_connections: 1000
+balanced_log_level: 'info'
+balanced_access_format: >-
+  %(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"
+  request_time_seconds=%(T)s
+  request_time_microseconds=%(D)s
+  guru_id=%({x-balanced-guru}o)s
+  version=%({x-balanced-software-build}o)s
+  merchant_guid=%({x-balanced-merchant}o)s
+  marketplace_guid=%({x-balanced-marketplace}o)s
+
+# app health file
+balanced_healthy: true
+balanced_health_file: /var/lib/balanced/health
+
+# balanced.conf stuff
+# if balanced_create_override_conf is set to true, the variables below
+# will be used to generate the appropriate balanced app configuration
+balanced_create_override_conf: false
+# -- start
 balanced_app_environment: null
 balanced_proxied: null
-
-# health file
-balanced_health_file: null
 
 # precog credentials
 balanced_precog_url: null
@@ -11,30 +36,46 @@ balanced_precog_username: null
 balanced_precog_password: null
 
 # postgres uris
+# type, [uris]
 balanced_postgres: {}
 
 # amqp
+# key: value
 balanced_amqp: {}
 
 # es
+# clusters:
+#  name: [{
+#    'hosts': [],
+#    'username': None,
+#    'password': None,
+#  }]
+# pool:
+#  max_size: 0
+#  timeout: 0
 balanced_es: {}
 
 # redis
+# {"host": xxx, "db": xx}
 balanced_redis: {}
 
 # sentry
+# {'url': 'xxx', "dsn": ''}
 balanced_sentry: {}
 
 # features
+# {'feature_name': True|False}
 balanced_features: {}
 
 # statsd
+# {'host': xx, 'port': xx}
 balanced_statsd: {}
 
 # ignoreable callback domains
-balanced_ignoreable_callback_domains: {}
+balanced_ignoreable_callback_domains: []
 
 # can serve prod/test?
+# true/false
 balanced_serves_live: null
 balanced_serves_integration: null
 
