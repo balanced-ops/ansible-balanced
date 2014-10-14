@@ -5,6 +5,9 @@
   vars:
     citadel_bucket: 'balanced-citadel'
 
+  vars_files:
+    - 'defaults/main.yml'
+
   handlers:
     - include: handlers/main.yml
 
@@ -12,9 +15,6 @@
     - base
 
   tasks:
-    - include_vars: defaults/main.yml
-      tags: [balanced, balanced-install]
-
     - name: Fetch deploy key?
       debug: msg="{{ lookup('citadel', '/deploy_key/deploy.pem') }}"
       tags: citadel
