@@ -13,5 +13,17 @@
     name: postgresql-client
 
   - src: git+git@github.com:balanced-cookbooks/ansible-base.git
-    version: master
+    version: b728fd403c6c900dd6bcd872c956839665e561b9
     name: base
+
+  - src: gpstathis.elasticsearch
+    name: elasticsearch
+
+  - src: ANXS.postgresql
+    name: postgresql
+
+  - src: Stouts.rabbitmq
+    name: rabbitmq
+
+  - src: DavidWittman.redis
+    name: redis

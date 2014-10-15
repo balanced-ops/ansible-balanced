@@ -4,15 +4,24 @@
   sudo: yes
   vars:
     citadel_bucket: 'balanced-citadel'
+    rabbitmq_vhosts:
+      - localhost
+    redis_bind:
+      - 127.0.0.1
 
   vars_files:
+    - roles/elasticsearch/vars/sample.yml
     - 'defaults/main.yml'
-
-  handlers:
-    - include: handlers/main.yml
 
   roles:
     - base
+    - elasticsearch
+    - postgresql
+    - rabbitmq
+    - redis
+
+  handlers:
+    - include: handlers/main.yml
 
   tasks:
     - name: Fetch deploy key?
