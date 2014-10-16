@@ -1,0 +1,53 @@
+---
+
+# - name: refresh requirements from source code
+#   pip: >
+#     name=.[tests]
+#     chdir="/home/{{ ansible_ssh_user }}/balanced"
+#     executable=/opt/balanced/embedded/bin/pip
+#     extra_args='-e'
+
+- shell: pwd chdir="/home/{{ ansible_ssh_user }}/balanced"
+
+- shell: echo $PATH
+  environment:
+    PATH: /opt/balanced/embedded/bin:{{ ansible_env.PATH }}
+    BALANCED_ENV: test
+
+- name: set up the path for local development
+  shell: >
+    /opt/balanced/embedded/bin/python setup.py develop
+    chdir=/home/{{ ansible_ssh_user }}/balanced
+
+- name: clean and recreate test db
+  shell: >
+    scripts/recreate-test
+    chdir=/home/{{ ansible_ssh_user }}/balanced
+  environment:
+    PATH: /opt/balanced/embedded/bin:{{ ansible_env.PATH }}
+    BALANCED_ENV: test
+
+- name: version control the db
+  shell: >-
+    /opt/balanced/embedded/bin/python
+    db/mig.py
+    postgresql://balanced:balanced@localhost/balanced -- version_control || 1
+    chdir=/home/{{ ansible_ssh_user }}/balanced
+  register: balanced_test_db_vc
+  ignore_errors: true
+
+- name: check db is versioned
+  fail: msg="version controlling db failed"
+  when: balanced_test_db_vc.rc not in [0, 127]
+
+- name: upgrade test db
+  shell: >-
+    /opt/balanced/embedded/bin/python
+    db/mig.py
+    postgresql://balanced:balanced@localhost/balanced -- upgrade
+    chdir=/home/{{ ansible_ssh_user }}/balanced
+
+- name: remove compiled python files
+  shell: >
+    find . -name '*.pyc' -delete
+    chdir=/home/{{ ansible_ssh_user }}/balanced
