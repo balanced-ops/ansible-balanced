@@ -1,5 +1,16 @@
 ## Balanced [![Build Status](https://travis-ci.org/balanced-ops/ansible-balanced.svg)](https://travis-ci.org/balanced-ops/ansible-balanced)
 
+## Installing roles
+
+```bash
+ansible-galaxy install -r requirements.yml -p `pwd`/roles
+```
+
+### Re-installing roles
+
+```bash
+ansible-galaxy install -r requirements.yml -p `pwd`/roles --ignore-errors
+```
 
 ## Debugging while running vagrant
 
