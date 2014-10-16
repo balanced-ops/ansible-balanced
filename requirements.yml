@@ -13,7 +13,7 @@
     name: postgresql-client
 
   - src: git+git@github.com:balanced-cookbooks/ansible-base.git
-    version: b9365078a7444e0ae180e623c9c617773b136ade
+    version: f8c4f39cdaf6ed90220b6eab4c85afa5886d40bb
     name: base
 
   - src: gpstathis.elasticsearch
