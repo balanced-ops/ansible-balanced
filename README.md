@@ -25,3 +25,9 @@ ansible -i ./vagrant_ansible_inventory_default all -m ec2_facts -u vagrant -vvv 
 ```bash
 ansible-playbook -i ./vagrant_ansible_inventory_default -u vagrant -vvv -c ssh --private-key ~/.vagrant.d/insecure_private_key site.yml
 ```
+
+
+## Gotachas
+
+- setup ansbile inside virtualenv and run it from there
+- make sure you synced over your folders (TODO: make this part of the play)
