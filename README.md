@@ -31,4 +31,4 @@ ansible-playbook -i ./vagrant_ansible_inventory_default -u vagrant -vvv -c ssh -
 
 - setup ansbile inside virtualenv and run it from there
 - make sure you synced over your folders (TODO: make this part of the play)
-- if you use vagrant, destroy the VM, and re-provision it, you have to delete teh host file key otherwise ansible cna't start
+- if you use vagrant, destroy the VM, and re-provision it, you have to delete the host file key otherwise ansible can't start
