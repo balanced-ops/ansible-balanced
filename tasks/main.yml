@@ -1,6 +1,7 @@
 ---
 
 - name: user
+  sudo: yes
   user: >
     name=balanced
     state=present
