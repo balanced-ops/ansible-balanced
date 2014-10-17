@@ -2,12 +2,15 @@
 
 - name: start balanced
   service: name=balanced state=started
+  when: balanced_create_override_conf
 
 - name: restart balanced
   service: name=balanced state=restarted
+  when: balanced_create_override_conf
 
 - name: reload balanced
   service: name=balanced state=reloaded
+  when: balanced_create_override_conf
 
 - name: restart rsyslog
   service: name=rsyslog state=restarted

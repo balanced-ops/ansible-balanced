@@ -7,7 +7,8 @@ GUNICORN_CONF="${CONF_DIR}/gunicorn.conf"
 GUNICORN_OPTS=
 {% endblock %}
 
-{% block daemon_opts %}gunicorn -- -c $GUNICORN_CONF -D -p $PID_FILE $GUNICORN_OPTS{% endblock %}
+## -c $PROG_CONF -g $GUNICORN_CONF -- -D -p $PID_FILE $GUNICORN_OPTS
+{% block daemon_opts %} -g $GUNICORN_CONF -- -D -p $PID_FILE $GUNICORN_OPTS{% endblock %}
 
 {% block commands %}
 {{ super() }}

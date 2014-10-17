@@ -1,5 +1,13 @@
 ---
 
+- name: user
+  user: >
+    name=balanced
+    state=present
+    shell=/bin/bash
+    createhome=no
+    home=/opt/balanced
+
 - include: install_git.yml
   tags: [balanced, balanced-install]
   when: balanced_install_method == 'git'

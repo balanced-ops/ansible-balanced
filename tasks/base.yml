@@ -1,13 +1,5 @@
 ---
 
-- name: user
-  user: >
-    name=balanced
-    state=present
-    shell=/bin/bash
-    createhome=no
-    home=/opt/balanced
-
 - name: dirs
   file: path={{ item }} owner=balanced group=balanced state=directory mode=0755
   with_items:
@@ -79,6 +71,7 @@
     - restart balanced
 
 - name: writing balanced service initd script
+  tags: initd
   template: >
     src=init/gunicorn.j2
     dest=/etc/init.d/balanced

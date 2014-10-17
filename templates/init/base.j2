@@ -30,7 +30,7 @@ PID_POLL=1
 
 [ -f /etc/default/$NAME ] && . /etc/default/$NAME
 
-DAEMON_OPTS="{% block daemon_opts %}{% endblock %}"
+DAEMON_OPTS="-c $PROG_CONF{% block daemon_opts %}{% endblock %}"
 
 [ -d $RUN_DIR ] || install -m 755 -o $USER -g $USER -d $RUN_DIR
 
@@ -55,6 +55,7 @@ wait_for_pidfile() {
 }
 
 start() {
+    echo "* staring with $DAEMON $DAEMON_OPTS"
     echo -n "* $NAME is starting: "
     start-stop-daemon --start --exec $DAEMON --oknodo --chuid $USER_ID -- $DAEMON_OPTS
     wait_for_pidfile

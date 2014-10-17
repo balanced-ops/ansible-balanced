@@ -1,12 +1,5 @@
 ---
 
-# - name: refresh requirements from source code
-#   pip: >
-#     name=.[tests]
-#     chdir="/home/{{ ansible_ssh_user }}/balanced"
-#     executable=/opt/balanced/embedded/bin/pip
-#     extra_args='-e'
-
 - shell: pwd chdir="/home/{{ ansible_ssh_user }}/balanced"
 
 - shell: echo $PATH
@@ -14,10 +7,12 @@
     PATH: /opt/balanced/embedded/bin:{{ ansible_env.PATH }}
     BALANCED_ENV: test
 
-- name: set up the path for local development
-  shell: >
-    /opt/balanced/embedded/bin/python setup.py develop
-    chdir=/home/{{ ansible_ssh_user }}/balanced
+- name: force balanced into an editable install
+  tags: pip
+  pip: >
+    name='-e .[tests]'
+    chdir="/home/{{ ansible_ssh_user }}/balanced"
+    executable=/opt/balanced/embedded/bin/pip
 
 - name: clean and recreate test db
   shell: >
