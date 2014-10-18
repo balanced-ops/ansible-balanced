@@ -8,6 +8,7 @@
     shell=/bin/bash
     createhome=no
     home=/opt/balanced
+  sudo: yes
 
 - include: install_git.yml
   tags: [balanced, balanced-install]
