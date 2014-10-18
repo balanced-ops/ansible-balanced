@@ -3,6 +3,11 @@
 ## How to install
 
 - If you don't have a virtualenv with ansible 1.8 installed, you should create one. Let's call this ansible-venv
+- This takes on my machine:
+
+    vagrant up --provision 16.84s user 8.35s system 2% cpu **14:56.98** total
+
+So, about 15minutes.
 
 ### installing ansible
 ```bash
