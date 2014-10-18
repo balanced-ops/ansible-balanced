@@ -1,5 +1,32 @@
 ## Balanced [![Build Status](https://travis-ci.org/balanced-ops/ansible-balanced.svg)](https://travis-ci.org/balanced-ops/ansible-balanced)
 
+## How to install
+
+- If you don't have a virtualenv with ansible 1.8 installed, you should create one. Let's call this ansible-venv
+
+### installing ansible
+```bash
+workon ansible-venv
+git clone git@github.com:ansible/ansible.git
+git submodule update --init --recursive
+cd ansible
+pip install .
+cd ../
+```
+
+### installing confu
+```bash
+workon ansible-venv
+pip install con-fu
+```
+
+## Run w/ Vagrant
+
+```bash
+workon ansible-venv
+vagrant up --provision
+```
+
 ## Installing roles
 
 ```bash
