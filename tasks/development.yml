@@ -46,3 +46,11 @@
   shell: >
     find . -name '*.pyc' -delete
     chdir=/home/{{ ansible_ssh_user }}/balanced
+
+- name: put balanced venv binary on the path for convenience
+  copy: >-
+    content=PATH=/opt/balanced/embedded/bin:{{ ansible_env.PATH }}
+    dest=/etc/profile.d/path.sh
+    owner=root
+    group=root
+    mode=0755
