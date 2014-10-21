@@ -25,7 +25,7 @@ workon ansible-venv
 pip install con-fu
 ```
 
-## Installing roles
+### installing roles
 
 ```bash
 ansible-galaxy install -r requirements.yml -p `pwd`/roles
@@ -37,7 +37,6 @@ ansible-galaxy install -r requirements.yml -p `pwd`/roles
 workon ansible-venv
 vagrant up --provision
 ```
-
 
 ### Re-installing roles
 
