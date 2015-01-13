@@ -12,7 +12,7 @@
     version: master
     name: postgresql-client
 
-  - src: git+git@github.com:balanced-cookbooks/ansible-base.git
+  - src: git+git@github.com:balanced-ops/ansible-base.git
     name: base
 
   - src: gpstathis.elasticsearch
