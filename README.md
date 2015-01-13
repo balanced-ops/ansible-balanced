@@ -12,11 +12,7 @@ So, about 15minutes.
 ### installing ansible
 ```bash
 workon ansible-venv
-git clone git@github.com:ansible/ansible.git
-git submodule update --init --recursive
-cd ansible
-pip install .
-cd ../
+pip install ansible==1.8.2
 ```
 
 ### installing confu
