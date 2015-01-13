@@ -84,13 +84,19 @@
         balanced_apt_version: null
 
     - name: install pip dirs for vagrant user
-      include: roles/base/tasks/py.yml
-      tags: balanced-install-development
-      vars:
-        users:
-          - name: vagrant
-        pypi_username: omnibus
-        pypi_password: "{{ lookup('citadel', '/omnibus/devpi_password').strip() }}"
+      file: "path=~{{ item.name }}/.pip owner={{ item.name }} group={{ item.name }} mode=0700 state=directory"
+      with_flattened:
+        - [{name: vagrant}]
+
+    - name: create pip confs
+      template: "src=pip.conf.j2 dest=~{{ item.name }}/.pip/pip.conf owner={{ item.name }} group={{ item.name }} mode=600"
+      with_flattened:
+        - [{name: vagrant}]
+
+    - name: create pip confs
+      template: "src=pydistutils.cfg.j2 dest=~{{ item.name }}/.pydistutils.cfg owner={{ item.name }} group={{ item.name }} mode=600"
+      with_flattened:
+        - [{name: vagrant}]
 
     - name: install balanced development tools
       include: tasks/development.yml
