@@ -9,6 +9,8 @@
     redis_bind: 127.0.0.1
     postgresql_ext_install_contrib: yes
     postgresql_client_encoding: utf8
+    pypi_username: omnibus
+    pypi_password: "{{ lookup('citadel', 'omnibus/devpi_password') | trim }}"
 
   vars_files:
     - roles/elasticsearch/vars/sample.yml
