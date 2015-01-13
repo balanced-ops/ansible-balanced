@@ -4,16 +4,15 @@
     version: master
     name: supervisord
 
-  - src: git+git@github.com:balanced-cookbooks/ansible-rsyslog.git
+  - src: git+git@github.com:balanced-ops/ansible-rsyslog.git
     name: rsyslog
     version: master
 
-  - src: git+git@github.com:balanced-cookbooks/ansible-postgresql-client.git
+  - src: git+git@github.com:balanced-ops/ansible-postgresql-client.git
     version: master
     name: postgresql-client
 
   - src: git+git@github.com:balanced-cookbooks/ansible-base.git
-    version: fe2c4c33abdb7be7329b6ef90ff9b67b601fc2c3
     name: base
 
   - src: gpstathis.elasticsearch
