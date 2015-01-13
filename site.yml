@@ -89,12 +89,12 @@
         - [{name: vagrant}]
 
     - name: create pip confs
-      template: "src=pip.conf.j2 dest=~{{ item.name }}/.pip/pip.conf owner={{ item.name }} group={{ item.name }} mode=600"
+      template: "src=templates/pip.conf.j2 dest=~{{ item.name }}/.pip/pip.conf owner={{ item.name }} group={{ item.name }} mode=600"
       with_flattened:
         - [{name: vagrant}]
 
     - name: create pip confs
-      template: "src=pydistutils.cfg.j2 dest=~{{ item.name }}/.pydistutils.cfg owner={{ item.name }} group={{ item.name }} mode=600"
+      template: "src=templates/pydistutils.cfg.j2 dest=~{{ item.name }}/.pydistutils.cfg owner={{ item.name }} group={{ item.name }} mode=600"
       with_flattened:
         - [{name: vagrant}]
 
