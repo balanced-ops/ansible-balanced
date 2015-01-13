@@ -11,6 +11,7 @@ So, about 15minutes.
 
 ### installing ansible
 ```bash
+workon ansible-venv
 pip install ansible==1.8.2
 ```
 
